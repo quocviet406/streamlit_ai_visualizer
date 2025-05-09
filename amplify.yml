@@ -1,0 +1,15 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands:
+        - pip install -r requirements.txt
+        - mkdir -p /tmp/static
+        - streamlit run app.py --server.headless=true --browser.serverAddress=0.0.0.0 &
+        - sleep 10
+        - wget -r -k -p http://localhost:8501
+        - mv localhost:8501/* /tmp/static/
+  artifacts:
+    baseDirectory: /tmp/static
+    files:
+      - '**/*'
