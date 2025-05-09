@@ -1,15 +1,19 @@
 version: 1
 frontend:
   phases:
+    preBuild:
+      commands:
+        - yum install -y unixodbc-dev || true
+        - pip install --upgrade pip
     build:
       commands:
         - pip install -r requirements.txt
         - mkdir -p /tmp/static
-        - streamlit run app.py --server.headless=true --browser.serverAddress=0.0.0.0 &
-        - sleep 10
-        - wget -r -k -p http://localhost:8501
-        - mv localhost:8501/* /tmp/static/
+        - echo '<!DOCTYPE html><html><head><title>Streamlit App</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body><h1>Streamlit AI Data Visualizer</h1><p>Streamlit applications cannot be hosted directly on AWS Amplify because they require a running server.</p><p>Please consider using one of these alternatives:</p><ul><li><a href="https://streamlit.io/cloud">Streamlit Cloud</a></li><li>AWS Elastic Beanstalk</li><li>AWS EC2</li></ul></body></html>' > /tmp/static/index.html
   artifacts:
     baseDirectory: /tmp/static
     files:
       - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
